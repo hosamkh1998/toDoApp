@@ -1,0 +1,215 @@
+<div class="row">
+  <div class="col-12">
+    <!-- Button trigger modal -->
+    <button
+      type="button"
+      class="btn btn-primary mt-1"
+      data-bs-toggle="modal"
+      data-bs-target="#staticBackdrop"
+      style="width: 18rem"
+      (click)="
+        modalDetails.title = 'Add new Todo';
+        modalDetails.btn = 'Add Todo';
+        modalDetails.status = 1
+      "
+    >
+      Add new Todo <i class="bi bi-plus-circle"></i>
+    </button>
+  </div>
+  <div
+    *ngFor="let todo of localTodos; let i = index"
+    class="card m-2 shadow-lg p-3 mb-5 bg-body-tertiary rounded"
+    style="width: 18rem"
+  >
+    <div class="card-body">
+      <h5 class="card-title">{{ todo.title }}</h5>
+      <p class="card-text">{{ todo.description }}</p>
+      <p (dblclick)="changeTodoStatus(todo)">
+        <i
+          *ngIf="todo.completed"
+          class="bi bi-check-circle text-success fs-4"
+        ></i>
+        <i
+          *ngIf="!todo.completed"
+          class="bi bi-arrow-repeat text-warning fs-4"
+        ></i>
+      </p>
+      <div class="col-12">
+        <button
+          data-bs-toggle="modal"
+          data-bs-target="#staticBackdrop"
+          class="btn btn-outline-danger col-6 border border-dark"
+          (click)="
+            modalDetails.title = 'Remove Todo';
+            modalDetails.btn = 'Remove';
+            modalDetails.status = 3;
+            todoToAction(todo)
+          "
+        >
+          remove
+        </button>
+        <button
+          data-bs-toggle="modal"
+          data-bs-target="#staticBackdrop"
+          class="btn btn-outline-success col-6 border border-dark"
+          (click)="
+            modalDetails.title = 'Edit Todo';
+            modalDetails.btn = 'Save';
+            modalDetails.status = 2;
+            todoToAction(todo)
+          "
+        >
+          Edit
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div
+  class="modal fade"
+  id="staticBackdrop"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+  tabindex="-1"
+  aria-labelledby="staticBackdropLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="staticBackdropLabel">
+          {{ modalDetails.title }}
+        </h1>
+        <button
+          (click)="restartModal()"
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <!-- add new -->
+        <div *ngIf="modalDetails.status === 1">
+          <div class="form-floating mb-3">
+            <input
+              type="text"
+              class="form-control"
+              id="floatingInput"
+              placeholder="title"
+              [(ngModel)]="currTodo.title"
+            />
+            <label for="floatingInput">title</label>
+          </div>
+          <div class="form-floating mb-3">
+            <textarea
+              type="text"
+              class="form-control"
+              id="floatingInput"
+              placeholder="description"
+              [(ngModel)]="currTodo.description"
+            ></textarea>
+            <label for="floatingInput">description</label>
+          </div>
+          <div>
+            <button
+              class="btn"
+              [ngClass]="{
+                'btn-warning': !currTodo.completed,
+                'btn-success': currTodo.completed
+              }"
+              (click)="currTodo.completed = !currTodo.completed"
+            >
+              {{ !currTodo.completed ? "On progress" : "Completed" }}
+            </button>
+          </div>
+        </div>
+        <!-- Edit toDo -->
+        <div *ngIf="modalDetails.status === 2">
+          <div class="form-floating mb-3">
+            <input
+              type="text"
+              class="form-control"
+              id="floatingInput"
+              placeholder="title"
+              [(ngModel)]="currTodo.title"
+            />
+            <label for="floatingInput">title</label>
+          </div>
+          <div class="form-floating mb-3">
+            <textarea
+              type="text"
+              class="form-control"
+              id="floatingInput"
+              placeholder="description"
+              [(ngModel)]="currTodo.description"
+            ></textarea>
+            <label for="floatingInput">description</label>
+          </div>
+          <div>
+            <button
+              class="btn"
+              [ngClass]="{
+                'btn-warning': !currTodo.completed,
+                'btn-success': currTodo.completed
+              }"
+              (click)="currTodo.completed = !currTodo.completed"
+            >
+              {{ !currTodo.completed ? "On progress" : "Completed" }}
+            </button>
+          </div>
+        </div>
+        <!-- Remove toDo -->
+        <div *ngIf="modalDetails.status === 3">
+          <div>
+            Are you sure you want remove this todo?
+            <ul>
+              <li><b>Title:</b>{{ currTodo.title }}</li>
+              <li><b>Description:</b>{{ currTodo.description }}</li>
+              <li><b>Completed:</b>{{ currTodo.completed }}</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          data-bs-dismiss="modal"
+          (click)="restartModal()"
+        >
+          Close
+        </button>
+        <button
+          *ngIf="modalDetails.status === 1"
+          type="button"
+          class="btn btn-primary"
+          data-bs-dismiss="modal"
+          (click)="saveTodo()"
+        >
+          {{ modalDetails.btn }}
+        </button>
+        <button
+          *ngIf="modalDetails.status === 2"
+          type="button"
+          class="btn btn-success"
+          data-bs-dismiss="modal"
+          (click)="saveTodo()"
+        >
+          {{ modalDetails.btn }}
+        </button>
+        <button
+          *ngIf="modalDetails.status === 3"
+          type="button"
+          class="btn btn-danger"
+          data-bs-dismiss="modal"
+          (click)="removeToDo(currTodo)"
+        >
+          {{ modalDetails.btn }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
